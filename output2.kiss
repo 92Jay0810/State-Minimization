@@ -1,7 +1,7 @@
 .start_kiss
 .i 2
 .o 1
-.p 6
+.p 16
 .s 4
 .r b
 00 b a 0

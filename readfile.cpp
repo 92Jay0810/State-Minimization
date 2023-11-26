@@ -29,7 +29,14 @@ stateMachine readFile(std::string &filename)
             }
             if (line.substr(0, 2) == ".p")
             {
-                relation_number = line[2] - '0';
+                if (line[3] != '\0')
+                {
+                    relation_number = std::stoi(line.substr(2, 2));
+                }
+                else
+                {
+                    relation_number = line[2] - '0';
+                }
             }
             if (line.substr(0, 2) == ".s")
             {
@@ -74,7 +81,7 @@ void outputkissfile(std::string outputfile_name, std::vector<implicantElement> n
         outputFile << ".start_kiss" << std::endl;
         outputFile << ".i " << state_machine.input_number << std::endl;
         outputFile << ".o " << state_machine.output_number << std::endl;
-        outputFile << ".p " << new_implicantelements.size() << std::endl;
+        outputFile << ".p " << statechar.size() * state_machine.input_number * 2 << std::endl;
         outputFile << ".s " << statechar.size() << std::endl;
         outputFile << ".r " << state_machine.initstate << std::endl;
         std::set<char> include_state;
