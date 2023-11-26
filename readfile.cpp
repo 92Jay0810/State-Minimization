@@ -52,7 +52,10 @@ stateMachine readFile(std::string &filename)
                         std::vector<std::string> split_space;
                         while (true)
                         {
-                            split_space.push_back(line.substr(0, line.find(" "))); // space in left
+                            if (line.substr(0, line.find(" ")) != "\0")
+                            {
+                                split_space.push_back(line.substr(0, line.find(" "))); // space in left
+                            }
                             line = line.substr(line.find(" ") + 1, line.length()); // space in right
                             if (line.find(" ") == -1)                              // final no string push left in vector
                             {
