@@ -13,49 +13,54 @@ stateMachine readFile(std::string &filename)
         int output_number;
         int state_number;
         int relation_number;
-        char initstate;
+        std::string initstate;
         std::vector<stateRelation> state_relation;
         while (std::getline(file, line))
         {
             std::cout << line << std::endl;
-            line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
             if (line.substr(0, 2) == ".i")
             {
-                input_number = line[2] - '0';
+                input_number = std::stoi(line.substr(line.find(" ") + 1, line.length()));
             }
             if (line.substr(0, 2) == ".o")
             {
-                output_number = line[2] - '0';
+                output_number = std::stoi(line.substr(line.find(" ") + 1, line.length()));
             }
             if (line.substr(0, 2) == ".p")
             {
-                if (line[3] != '\0')
-                {
-                    relation_number = std::stoi(line.substr(2, 2));
-                }
-                else
-                {
-                    relation_number = line[2] - '0';
-                }
+                relation_number = std::stoi(line.substr(line.find(" ") + 1, line.length()));
             }
             if (line.substr(0, 2) == ".s")
             {
                 if (line != ".start_kiss")
                 {
-                    state_number = line[2] - '0';
+                    state_number = std::stoi(line.substr(line.find(" ") + 1, line.length()));
                 }
             }
             if (line.substr(0, 2) == ".r")
             {
-                initstate = line[2];
+                initstate = line.substr(line.find(" ") + 1, line.length()); // space in right
                 while (std::getline(file, line))
                 {
+                    if (line == ".end_kiss")
+                    {
+                        break;
+                    }
                     if (line != ".end_kiss")
                     {
                         std::cout << line << std::endl;
-                        line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
-                        // 修改
-                        stateRelation temp_state_relation(line.substr(0, input_number), line[input_number - 1 + 1], line[input_number - 1 + 2], line[input_number - 1 + 3] - '0');
+                        std::vector<std::string> split_space;
+                        while (true)
+                        {
+                            split_space.push_back(line.substr(0, line.find(" "))); // space in left
+                            line = line.substr(line.find(" ") + 1, line.length()); // space in right
+                            if (line.find(" ") == -1)                              // final no string push left in vector
+                            {
+                                split_space.push_back(line);
+                                break;
+                            }
+                        }
+                        stateRelation temp_state_relation(split_space[0], split_space[1], split_space[2], std::stoi(split_space[3]));
                         state_relation.push_back(temp_state_relation);
                     }
                 }
@@ -73,7 +78,7 @@ stateMachine readFile(std::string &filename)
         return statemachine;
     }
 }
-void outputkissfile(std::string outputfile_name, std::vector<implicantElement> new_implicantelements, stateMachine state_machine, std::vector<char> statechar)
+void outputkissfile(std::string outputfile_name, std::vector<implicantElement> new_implicantelements, stateMachine state_machine, std::vector<std::string> statechar)
 {
     std::ofstream outputFile(outputfile_name);
     if (outputFile.is_open())
@@ -84,7 +89,7 @@ void outputkissfile(std::string outputfile_name, std::vector<implicantElement> n
         outputFile << ".p " << statechar.size() * state_machine.input_number * 2 << std::endl;
         outputFile << ".s " << statechar.size() << std::endl;
         outputFile << ".r " << state_machine.initstate << std::endl;
-        std::set<char> include_state;
+        std::set<std::string> include_state;
         for (int i = 0; i < new_implicantelements.size(); i++)
         {
             if (include_state.find(new_implicantelements[i].state_major) == include_state.end())
@@ -116,7 +121,7 @@ void outputkissfile(std::string outputfile_name, std::vector<implicantElement> n
         std::cout << "can't open file" << std::endl;
     }
 }
-void outputdotfile(std::string outputfile_name, std::vector<implicantElement> new_implicantelements, stateMachine state_machine, std::vector<char> statechar)
+void outputdotfile(std::string outputfile_name, std::vector<implicantElement> new_implicantelements, stateMachine state_machine, std::vector<std::string> statechar)
 {
     std::ofstream outputFile(outputfile_name);
     if (outputFile.is_open())
@@ -130,7 +135,7 @@ void outputdotfile(std::string outputfile_name, std::vector<implicantElement> ne
         }
         outputFile << std::endl;
         outputFile << "\t INIT -> " << state_machine.initstate << ";" << std::endl;
-        std::set<char> include_state;
+        std::set<std::string> include_state;
         for (int i = 0; i < new_implicantelements.size(); i++)
         {
             if (include_state.find(new_implicantelements[i].state_major) == include_state.end())

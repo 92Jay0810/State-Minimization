@@ -9,27 +9,27 @@ public:
     int output_number;
     int state_number;
     int relation_number;
-    char initstate;
+    std::string initstate;
     std::vector<stateRelation> state_relation;
     bool readable = true;
-    stateMachine(int inputNum, int outputNum, int stateNum, int relationNum, char init_state, std::vector<stateRelation> staterelation) : input_number(inputNum), output_number(outputNum), state_number(stateNum), relation_number(relationNum), initstate(init_state), state_relation(staterelation) {}
+    stateMachine(int inputNum, int outputNum, int stateNum, int relationNum, std::string init_state, std::vector<stateRelation> staterelation) : input_number(inputNum), output_number(outputNum), state_number(stateNum), relation_number(relationNum), initstate(init_state), state_relation(staterelation) {}
     stateMachine(bool readable) : readable(readable) {}
 };
 class stateRelation
 {
 public:
     std::string input;
-    char present_state;
-    char next_state;
+    std::string present_state;
+    std::string next_state;
     int output;
-    stateRelation(std::string input, char presentstate, char nextstate, int output) : input(input), present_state(presentstate), next_state(nextstate), output(output) {}
+    stateRelation(std::string input, std::string presentstate, std::string nextstate, int output) : input(input), present_state(presentstate), next_state(nextstate), output(output) {}
     stateRelation() {}
 };
 class simplfystate
 {
 public:
     std::string input;
-    char next_state;
+    std::string next_state;
     int output;
     simplfystate() {}
     friend std::ostream &operator<<(std::ostream &os, const simplfystate &state)
@@ -45,8 +45,8 @@ public:
 class implicantElement
 {
 public:
-    char state_major;
-    char state_minor;
+    std::string state_major;
+    std::string state_minor;
     std::map<std::string, simplfystate> majorstate_element;
     std::map<std::string, simplfystate> minorstate_element;
     bool vaild = true;
@@ -98,7 +98,7 @@ class implicantTable
 public:
     std::vector<std::vector<implicantElement>> implicantelements;
     int statenumber;
-    std::vector<char> statechar;
+    std::vector<std::string> statechar;
     std::vector<int> implicantcolumn_size;
     implicantTable() {}
     void show()

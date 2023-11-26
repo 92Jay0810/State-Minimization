@@ -6,13 +6,13 @@
 #include <map>
 stateMachine readFile(std::string &filename);
 implicantTable Build_implicationTable(stateMachine state_machine);
-implicantElement find_stateRelation(char state1, char state2, std::vector<stateRelation> state_relations);
+implicantElement find_stateRelation(std::string state1, std::string state2, std::vector<stateRelation> state_relations);
 implicantTable testvaild(implicantTable implicationtable);
 implicantTable reduction_implicantTable(implicantTable implicationtable);
 implicantTable merge_state(implicantTable implicationtable);
 std::vector<implicantElement> rearrange_implicantTable(implicantTable implicationtable);
-void outputkissfile(std::string outputfile_name, std::vector<implicantElement> new_implicantelements, stateMachine state_machine, std::vector<char> statechar);
-void outputdotfile(std::string outputfile_name, std::vector<implicantElement> new_implicantelements, stateMachine state_machine, std::vector<char> statechar);
+void outputkissfile(std::string outputfile_name, std::vector<implicantElement> new_implicantelements, stateMachine state_machine, std::vector<std::string> statechar);
+void outputdotfile(std::string outputfile_name, std::vector<implicantElement> new_implicantelements, stateMachine state_machine, std::vector<std::string> statechar);
 int main(int argc, char *filename[])
 {
     if (argc < 4)
@@ -54,11 +54,11 @@ implicantTable Build_implicationTable(stateMachine state_machine)
 {
     std::vector<stateRelation> state_relations = state_machine.state_relation;
     // create all state symbol
-    std::vector<char> statechar;
+    std::vector<std::string> statechar;
     // using set to fast find member
-    std::set<char> statecharset;
+    std::set<std::string> statecharset;
     // add init state, keep it in first element
-    char initstate = state_machine.initstate;
+    std::string initstate = state_machine.initstate;
     statecharset.insert(initstate);
     statechar.push_back(initstate);
     for (int i = 0; i < state_relations.size(); i++)
@@ -95,7 +95,7 @@ implicantTable Build_implicationTable(stateMachine state_machine)
     implicanttable.statenumber = state_machine.state_number;
     return implicanttable;
 }
-implicantElement find_stateRelation(char state1, char state2, std::vector<stateRelation> state_relations)
+implicantElement find_stateRelation(std::string state1, std::string state2, std::vector<stateRelation> state_relations)
 {
     implicantElement implicantelement;
     implicantelement.state_major = state1;
@@ -150,10 +150,10 @@ implicantTable reduction_implicantTable(implicantTable implicationtable)
                 {
                     // to find nextstate location first find state1's input and nextstate
                     std::string state1_input = majorstate_mapiterator.first;
-                    char state1_nextstate = majorstate_mapiterator.second.next_state;
+                    std::string state1_nextstate = majorstate_mapiterator.second.next_state;
                     // use state1's input map state2's input find state2's nextstate
                     auto state2_simplfystate_iterator = implicationtable.implicantelements[i][j].minorstate_element.find(state1_input);
-                    char state2_nextstate = (state2_simplfystate_iterator->second).next_state;
+                    std::string state2_nextstate = (state2_simplfystate_iterator->second).next_state;
                     auto iterator1 = std::find(implicationtable.statechar.begin(), implicationtable.statechar.end(), state1_nextstate);
                     int state1index = std::distance(implicationtable.statechar.begin(), iterator1);
                     auto iterator2 = std::find(implicationtable.statechar.begin(), implicationtable.statechar.end(), state2_nextstate);
@@ -237,8 +237,11 @@ implicantTable merge_state(implicantTable implicationtable)
     for (int i = 0; i < merge_state.size(); i++)
     {
         auto iterator = std::find(implicationtable.statechar.begin(), implicationtable.statechar.end(), merge_state[i].state_minor);
-        int state1index = std::distance(implicationtable.statechar.begin(), iterator);
-        implicationtable.statechar.erase(implicationtable.statechar.begin() + state1index);
+        if (iterator != implicationtable.statechar.end())
+        {
+            int state1index = std::distance(implicationtable.statechar.begin(), iterator);
+            implicationtable.statechar.erase(implicationtable.statechar.begin() + state1index);
+        }
     }
     return implicationtable;
 }
