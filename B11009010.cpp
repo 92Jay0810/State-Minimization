@@ -70,7 +70,7 @@ implicantTable Build_implicationTable(stateMachine state_machine)
             statechar.push_back(state_relations[i].present_state);
         }
     }
-    statecharset.empty();
+    statecharset.clear();
     // create implicantTable
     implicantTable implicanttable;
     std::vector<std::vector<implicantElement>> implicantelements;
